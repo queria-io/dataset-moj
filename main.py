@@ -9,7 +9,6 @@
 """
 
 import logging
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from multiprocessing import Pool
 from pathlib import Path
 
@@ -23,26 +22,33 @@ logging.basicConfig(level=logging.INFO, format="%(message)s", force=True)
 logger = logging.getLogger("pipelines")
 
 PARCEL_DIR = Path("data/moj/parcel")
-PARALLEL_DOWNLOADS = 6
 
 
 def parquet_path(file: str) -> Path:
     return PARCEL_DIR / f"{Path(file).stem}.parquet"
 
 
+def fetch_and_convert(source: dict) -> tuple[dict, int]:
+    """zip を取って Parquet にし、zip を消す。プロセスごとに 1 本ずつ受け持つ。"""
+    zip_path = fetch_zip(source)
+    rows = convert(zip_path, parquet_path(source["file"]))
+    zip_path.unlink()
+    return source, rows
+
+
 def convert_all(sources: list[dict]) -> None:
-    """Parquet の無い zip を取って変換する。今回の一覧に無い Parquet は消す。"""
+    """Parquet の無い zip を取って変換する。今回の一覧に無い Parquet は消す。
+
+    並列は zip 単位にする。1 本の中の XML を並列にすると、親が筆の行を受け取って
+    表にするところで 1 コアに詰まる。zip はプロセスの数しか同時に置かない。
+    """
     wanted = {parquet_path(s["file"]) for s in sources}
     for stale in set(PARCEL_DIR.glob("*.parquet")) - wanted:
         stale.unlink()
     todo = [s for s in sources if not parquet_path(s["file"]).exists()]
     logger.info("  変換するのは %d 本", len(todo))
-    with Pool() as pool, ThreadPoolExecutor(PARALLEL_DOWNLOADS) as downloads:
-        futures = {downloads.submit(fetch_zip, s): s for s in todo}
-        for done, future in enumerate(as_completed(futures), 1):
-            source, zip_path = futures[future], future.result()
-            rows = convert(zip_path, parquet_path(source["file"]), pool)
-            zip_path.unlink()
+    with Pool() as pool:
+        for done, (source, rows) in enumerate(pool.imap_unordered(fetch_and_convert, todo), 1):
             logger.info("  [%d/%d] %s %s: %d 筆", done, len(todo), source["file"], source["title"], rows)
 
 
