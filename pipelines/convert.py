@@ -20,6 +20,8 @@ import pyarrow.parquet as pq
 from mojxml.parse import ParseOptions, parse_raw
 from shapely.geometry import shape
 
+from shared.fetch import replacing
+
 OPTIONS = ParseOptions(include_arbitrary_crs=True, include_chikugai=True)
 ARBITRARY_CRS = "任意座標系"
 
@@ -124,5 +126,7 @@ def convert(zip_path: Path, output: Path) -> int:
     rows = [row for member in members for row in parse_member(member)]
     table = pa.Table.from_pylist(rows, schema=SCHEMA)
     output.parent.mkdir(parents=True, exist_ok=True)
-    pq.write_table(table, output, compression="zstd")
+    # 途中で止めたときに書きかけの Parquet が済んだものとして残らないようにする
+    with replacing(output) as partial:
+        pq.write_table(table, partial, compression="zstd")
     return table.num_rows
