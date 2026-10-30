@@ -1,11 +1,8 @@
 name: Sync
 
-# 原典の更新は年 1 回（春）なので定期実行はしない。main への push と手動で回す
+# 全国の zip は約 100GB あり、ランナーでは毎回取り直しになるので、自動では回さない。
+# 原典の更新は年 1 回（春）なので、手で回す
 on:
-  push:
-    branches: [main]
-    paths-ignore:
-      - "*.md"
   workflow_dispatch:
 
 concurrency:
@@ -17,5 +14,5 @@ jobs:
     uses: queria-io/dataset-shared/.github/workflows/sync.yml@main
     with:
       dataset_name: moj
-      timeout_minutes: 600
+      timeout_minutes: 360
     secrets: inherit

@@ -42,4 +42,4 @@ scripts/build.sh                        # queria sync -- python main.py
 MOJ_PREFECTURES=13,14 scripts/build.sh  # 東京都と神奈川県だけ
 ```
 
-原典は年 1 回（春）更新されます。main への push と手動実行で Sync が回ります。
+原典は年 1 回（春）更新されます。Sync は手動実行だけです。
