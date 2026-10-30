@@ -17,5 +17,5 @@ jobs:
     uses: queria-io/dataset-shared/.github/workflows/sync.yml@main
     with:
       dataset_name: moj
-      timeout_minutes: 120
+      timeout_minutes: 600
     secrets: inherit

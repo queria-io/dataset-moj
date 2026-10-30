@@ -119,8 +119,10 @@ def parse_member(member: tuple[str, bytes]) -> list[dict]:
 
 
 def convert(zip_path: Path, output: Path, pool) -> int:
-    """市区町村の zip を Parquet にして行数を返す。pool は map を持つもの（multiprocessing.Pool など）。"""
-    rows = [row for rows in pool.map(parse_member, xml_members(zip_path.read_bytes(), zip_path.name)) for row in rows]
+    """市区町村の zip を Parquet にして行数を返す。pool は imap を持つもの（multiprocessing.Pool など）。"""
+    members = xml_members(zip_path.read_bytes(), zip_path.name)
+    # imap で XML を少しずつ渡す。map だと展開した XML を全部先に抱える
+    rows = [row for rows in pool.imap(parse_member, members, chunksize=4) for row in rows]
     table = pa.Table.from_pylist(rows, schema=SCHEMA)
     output.parent.mkdir(parents=True, exist_ok=True)
     pq.write_table(table, output, compression="zstd")

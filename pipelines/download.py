@@ -17,7 +17,6 @@ import json
 import logging
 import os
 import re
-from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from urllib.parse import urlencode
 
@@ -32,9 +31,8 @@ SOURCES = Path("data/moj/sources.ndjson")
 # 当年の組織だけを拾う（moj-13tokyo は拾い、moj-13tokyo-2024-2025 は拾わない）
 ORGANIZATION = re.compile(r"moj-(\d{2})[a-z]+")
 ZIP_NAME = re.compile(r"(\d{5})-(\d{4})-(\d{4})\.zip")
-# 取り込む都道府県コード。全国（約 100GB）は大きさと時間を測ってから広げる
-PREFECTURES = os.environ.get("MOJ_PREFECTURES", "13").split(",")
-PARALLEL_DOWNLOADS = 6
+# 取り込む都道府県コード（カンマ区切り）。空なら全国
+PREFECTURES = [code for code in os.environ.get("MOJ_PREFECTURES", "").split(",") if code]
 
 
 def ckan(action: str, **params) -> dict:
@@ -46,7 +44,7 @@ def organizations() -> list[str]:
     return [
         name
         for name in ckan("organization_list", limit=1000)
-        if (m := ORGANIZATION.fullmatch(name)) and m.group(1) in PREFECTURES
+        if (m := ORGANIZATION.fullmatch(name)) and (not PREFECTURES or m.group(1) in PREFECTURES)
     ]
 
 
@@ -77,21 +75,19 @@ def sources() -> list[dict]:
     return sorted((s for p in packages if (s := latest_zip(p))), key=lambda s: s["file"])
 
 
-def fetch_zip(source: dict) -> None:
+def fetch_zip(source: dict) -> Path:
+    ZIP_DIR.mkdir(parents=True, exist_ok=True)
     path = ZIP_DIR / source["file"]
-    if path.exists() and path.stat().st_size == source["size"]:
-        return
-    download(source["zip_url"], path, user_agent=USER_AGENT, timeout=300)
-    logger.info("  %s (%s)", source["file"], source["title"])
+    if not (path.exists() and path.stat().st_size == source["size"]):
+        download(source["zip_url"], path, user_agent=USER_AGENT, timeout=300)
+    return path
 
 
-def download_moj() -> list[dict]:
+def list_moj() -> list[dict]:
+    """取り込む zip の一覧を data/moj/sources.ndjson に書いて返す。"""
     found = sources()
     if not found:
-        raise RuntimeError(f"no zip found for prefectures {PREFECTURES}")
+        raise RuntimeError(f"no zip found for prefectures {PREFECTURES or 'all'}")
     logger.info("  %d zip, %.2f GB", len(found), sum(s["size"] or 0 for s in found) / 1e9)
-    ZIP_DIR.mkdir(parents=True, exist_ok=True)
-    with ThreadPoolExecutor(PARALLEL_DOWNLOADS) as pool:
-        list(pool.map(fetch_zip, found))
     write_atomic(SOURCES, "".join(json.dumps(s, ensure_ascii=False) + "\n" for s in found).encode())
     return found

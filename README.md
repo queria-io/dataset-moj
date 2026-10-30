@@ -15,7 +15,7 @@
 | `chizu.parcel` | 1 行が 1 筆。市区町村・大字・丁目・小字・地番、座標系、精度区分。公共座標の筆だけ形と代表点 |
 | `chizu.source` | 取り込んだ zip。出典に書くデータセット名とページ URL |
 
-- いまは東京都（62 市区町村、約 560 万筆）だけを収録しています
+- 全国を収録しています
 - 任意座標系の図面の筆は形を持ちません。東京都では 9 割の筆が任意座標系です
 - 筆を示すキーは `(file, fude_id)` です。地番は図面をまたぐと重なることがあります
 
@@ -31,7 +31,7 @@ GROUP BY crs;
 
 地図 XML は [mojxml](https://github.com/MIERUNE/mojxml-py) で読み、公共座標を経緯度（JGD2011）に直します。筆界未定地のもとの筆（筆界未定構成筆）は mojxml が読まないので、lxml で読み直してリストで持ちます。自己交差する形は `ST_MakeValid` で直します。
 
-各データセットには前年と当年の zip があり、新しい年のものだけを取ります。取り込む都道府県は環境変数 `MOJ_PREFECTURES`（都道府県コードのカンマ区切り、既定は `13`）で決まります。
+各データセットには前年と当年の zip があり、新しい年のものだけを取ります。全国で zip が約 100GB あるので、取ったそばから Parquet にして zip は消します。Parquet が既にある zip は取り直しません。都道府県を絞るときは環境変数 `MOJ_PREFECTURES`（都道府県コードのカンマ区切り）を使います。
 
 ## ビルド
 
@@ -39,7 +39,7 @@ GROUP BY crs;
 git submodule update --init
 uv sync
 scripts/build.sh                        # queria sync -- python main.py
-MOJ_PREFECTURES=13,14 scripts/build.sh  # 東京都と神奈川県
+MOJ_PREFECTURES=13,14 scripts/build.sh  # 東京都と神奈川県だけ
 ```
 
 原典は年 1 回（春）更新されます。main への push と手動実行で Sync が回ります。
