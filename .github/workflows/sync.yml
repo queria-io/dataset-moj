@@ -1,0 +1,21 @@
+name: Sync
+
+# 原典の更新は年 1 回（春）なので定期実行はしない。main への push と手動で回す
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "*.md"
+  workflow_dispatch:
+
+concurrency:
+  group: sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    uses: queria-io/dataset-shared/.github/workflows/sync.yml@main
+    with:
+      dataset_name: moj
+      timeout_minutes: 120
+    secrets: inherit

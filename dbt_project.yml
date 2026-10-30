@@ -1,0 +1,24 @@
+name: "moj"
+version: "1.0.0"
+
+profile: "moj"
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros", "shared/macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  moj:
+    +database: moj
+    chizu:
+      +materialized: table
+      # 市区町村で引くので、行グループを 32,768 行にする。東京都 560 万筆で 1 つ 0.5MB 前後。
+      # 設定はスキーマに付く (dbt は __dbt_tmp に書いてから改名するので、テーブルに付けても効かない)
+      +pre-hook: "CALL moj.set_option('parquet_row_group_size', 32768, schema => 'chizu')"
