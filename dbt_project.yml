@@ -19,6 +19,6 @@ models:
     +database: moj
     chizu:
       +materialized: table
-      # 市区町村で引くので、行グループを 32,768 行にする。東京都 560 万筆で 1 つ 0.5MB 前後。
+      # 市区町村で引くので、行グループを 16,384 行にする。全国 2.4 億筆・17.5GB で 1 つ 1MB 前後。
       # 設定はスキーマに付く (dbt は __dbt_tmp に書いてから改名するので、テーブルに付けても効かない)
-      +pre-hook: "CALL moj.set_option('parquet_row_group_size', 32768, schema => 'chizu')"
+      +pre-hook: "CALL moj.set_option('parquet_row_group_size', 16384, schema => 'chizu')"
