@@ -1,0 +1,21 @@
+version: 2
+
+models:
+- name: parcel
+  description: 登記所備付地図の筆。1 行が 1 筆。
+  access: public
+  columns:
+  - name: file
+    data_tests: [not_null]
+  - name: fude_id
+    data_tests: [not_null]
+  - name: city_code
+    data_tests: [not_null]
+- name: source
+  description: 取り込んだ地図データの zip。1 行が 1 zip。
+  access: public
+  columns:
+  - name: file
+    data_tests: [unique, not_null]
+  - name: page_url
+    data_tests: [not_null]

@@ -1,0 +1,81 @@
+schema: chizu
+name: parcel
+title: 筆
+description: |-
+  登記所備付地図の筆（土地の 1 区画）。1 行が 1 筆。法務局の地図（不動産登記法第14条第1項の地図）と地図に準ずる図面の両方が入る。
+  公共座標（平面直角座標系）の図面の筆だけが形（geometry、経緯度 JGD2011）と代表点（lng / lat）を持つ。任意座標系の図面の筆は形が NULL。東京都では形を持つ筆は 1 割（区部 5%、市部 9%）、全国では 47%。
+  形は原典をそのまま経緯度に直したもので、自己交差する 0.3% の形は ST_MakeValid で直してある。
+
+  1 筆を示すキーは (file, fude_id)。地番（市区町村・大字・丁目・小字・予備のコードと chiban）は一意にならない。番号の無い土地（「道-1」「水-1」「無地番」など）は図面ごとに振られていて、同じ地番が別の図面に出てくる。数字の地番でも、任意座標系の図面と公共座標の図面の両方に同じ筆が載っていることがある。
+  地番に「地区外」「別図」とある筆は、その図面の外にある土地を指す。
+  筆界未定地は地番が「筆界未定地-24」のような形で、もとの筆を undetermined_members に持つ。
+
+  出典：「登記所備付地図データ」（法務省）。市区町村ごとのデータ名とページ URL は source にある。Queria が地図 XML を読み、1 筆 1 行にして公共座標を経緯度に変換して作成した。
+published: true
+primary_key: [file, fude_id]
+fields:
+  - name: city_code
+    title: 市区町村コード（5 桁）
+    description: 原典の市区町村コード（検査数字なし）
+    semantic: { role: entity, name: city }
+  - name: lg_code
+    title: 全国地方公共団体コード
+    description: city_code に検査数字を付けた 6 桁
+    semantic: { role: entity, name: city }
+  - name: city_name
+    title: 市区町村名
+    description: 原典の市区町村名。市町村合併の前の名前のことがある
+  - name: oaza_code
+    title: 大字コード
+    description: 法務局が付けたコード。市区町村の中で大字を表す
+  - name: chome_code
+    title: 丁目コード
+  - name: koaza_code
+    title: 小字コード
+  - name: yobi_code
+    title: 予備コード
+  - name: oaza
+    title: 大字名
+  - name: chome
+    title: 丁目名
+    description: 原典のまま全角数字（「３丁目」）
+  - name: koaza
+    title: 小字名
+  - name: yobi
+    title: 予備名
+  - name: chiban
+    title: 地番
+    description: 原典のまま（「147-2」「道-10」「筆界未定地-24」「地区外」など）
+  - name: crs
+    title: 座標系
+    description: 任意座標系、または公共座標1系〜19系（平面直角座標系の系番号）
+  - name: datum
+    title: 測地系判別
+    description: 公共座標の図面の測地系（変換済みかどうか）。原典のまま
+  - name: accuracy
+    title: 精度区分
+    description: 地籍調査の精度区分（甲一・甲二・甲三・乙一・乙二・乙三 など）。数字が小さく甲に近いほど精しい。任意座標系の筆はほとんど NULL
+  - name: coord_type
+    title: 座標値種別
+    description: 測量成果（測って求めた座標）か図上測量（図面から読み取った座標）か
+  - name: undetermined_members
+    title: 筆界未定の構成筆
+    description: 筆界未定地のとき、境界が決まっていないもとの筆の一覧（大字・丁目・小字・予備のコードと名前、地番）。それ以外は NULL
+  - name: geometry
+    title: ジオメトリ
+    description: 筆の形（POLYGON / MULTIPOLYGON、経緯度 JGD2011）。任意座標系の筆は NULL
+  - name: lng
+    title: 経度
+    description: 代表点（筆の内側に取った点）。任意座標系の筆は NULL
+  - name: lat
+    title: 緯度
+    description: 代表点（筆の内側に取った点）。任意座標系の筆は NULL
+  - name: map_name
+    title: 地図名
+    description: 原典の図面の名前
+  - name: file
+    title: ファイル名
+    description: 筆が載っている地図 XML のファイル名（市区町村コード-登記所コード-番号）
+  - name: fude_id
+    title: 筆 ID
+    description: 地図 XML の中の筆の ID。ファイルの中だけで一意

@@ -1,0 +1,52 @@
+spec_version: "0.1"
+name: moj
+title: 法務省 登記所備付地図
+description: |-
+  法務局が備え付けている地図（不動産登記法第14条第1項の地図と、地図に準ずる図面）の電子データ。1 行が 1 筆（土地の 1 区画）で、市区町村・大字・丁目・小字と地番、座標系、精度区分を持つ。
+  公共座標（平面直角座標系）で作られた図面の筆は、形（ポリゴン）と代表点の緯度経度を持つ。任意座標系の図面の筆は図面の上の座標しか無く、地図に重ねられないので形を持たない。
+  筆の形は登記の境界を表すもので、建物や利用の区画ではない。明治時代から現代までの図面が元になっていて、図面によって精度が違う（精度区分の列）。
+  全国を収録する。原典は年 1 回（春）更新される。
+
+  出典：「登記所備付地図データ」（法務省）（G空間情報センター、https://front.geospatial.jp/ ）。市区町村ごとのデータセットのページ URL は chizu.source の page_url にある。
+  Queria が地図 XML を読み、1 筆 1 行の表にして公共座標を緯度経度（JGD2011）に変換して作成した。法務省が作成したものではない。
+  登記所備付地図データ利用規約により、使うときは出典（市区町村ごとのデータ名と URL）と、加工したものであることを書くこと。他の情報と照合して特定の個人を識別する使い方は禁止されている。
+keywords:
+  - 登記所備付地図
+  - 地図XML
+  - 公図
+  - 14条地図
+  - 筆
+  - 地番
+  - 土地
+  - 不動産登記
+  - 法務省
+  - 法務局
+homepage: https://github.com/queria-io/dataset-moj
+language: ja
+themes: [housing_land]
+
+licenses:
+  - id: JP-MOJ-CHIZU
+    url: https://www.moj.go.jp/MINJI/minji05_00494.html
+    title: 登記所備付地図データ利用規約（法務省）
+    commercial_use: true
+    share_alike: false
+    attribution_required: true
+
+sources:
+  - title: 法務省 地図データのＧ空間情報センターを介した一般公開について
+    path: https://www.moj.go.jp/MINJI/minji05_00494.html
+  - title: G空間情報センター
+    path: https://front.geospatial.jp/
+
+contributors:
+  - title: 法務省
+    path: https://www.moj.go.jp/
+    roles: [rightsHolder]
+
+update_frequency: yearly
+cover: 🗺️
+
+schemas:
+  - name: chizu
+    title: 登記所備付地図

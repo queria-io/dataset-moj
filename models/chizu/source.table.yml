@@ -1,0 +1,35 @@
+schema: chizu
+name: source
+title: 取り込んだ地図データ
+description: |-
+  取り込んだ登記所備付地図データの一覧。1 行が G空間情報センターの 1 データセット（市区町村の 1 登記所）の zip。
+  使うときの出典には title（「登記所備付地図データ○○市」の名前）と page_url を書く。
+  1 つのデータセットには前年と当年の zip があり、新しい年のものだけを取り込んでいる（year）。
+published: true
+primary_key: [file]
+fields:
+  - name: file
+    title: ファイル名
+    description: zip のファイル名（市区町村コード-登記所コード-年.zip）
+  - name: city_code
+    title: 市区町村コード（5 桁）
+    semantic: { role: entity, name: city }
+  - name: lg_code
+    title: 全国地方公共団体コード
+    semantic: { role: entity, name: city }
+  - name: registry_code
+    title: 登記所コード
+  - name: year
+    title: 年
+    description: データの年（ファイル名の末尾）
+  - name: title
+    title: データセット名
+    description: G空間情報センターのデータセットの名前
+  - name: page_url
+    title: ページ URL
+    description: G空間情報センターのデータセットのページ。出典に書く URL
+  - name: zip_url
+    title: zip の URL
+  - name: size
+    title: zip の大きさ
+    description: バイト
