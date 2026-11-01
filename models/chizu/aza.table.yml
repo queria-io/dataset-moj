@@ -1,0 +1,40 @@
+schema: chizu
+name: aza
+title: 大字・丁目・小字の形
+description: |-
+  登記所備付地図の筆の形を、大字・丁目・小字ごとに合わせた形。1 行が 1 つの大字・丁目・小字。
+  形を持つ筆（公共座標の図面の筆）だけを合わせるので、任意座標系の図面が多い地域では形が欠ける。地番に「地区外」「別図」とある筆は図面の外の土地を指すので使わない。
+  筆の無い土地（登記されていない道路や水路など）は穴やすき間として残る。
+  コードは登記所ごとに振られていることがあるので、コードと名前の組で 1 行にしている。同じ大字・丁目・小字が別のコードで 2 行になることがある。
+
+  出典：「登記所備付地図データ」（法務省）。市区町村ごとのデータ名とページ URL は source にある。Queria が筆の形を大字・丁目・小字ごとに合わせて作成した。
+published: true
+fields:
+  - name: city_code
+    title: 市区町村コード（5 桁）
+    description: 原典の市区町村コード（検査数字なし）
+    semantic: { role: entity, name: city }
+  - name: lg_code
+    title: 全国地方公共団体コード
+    description: city_code に検査数字を付けた 6 桁
+    semantic: { role: entity, name: city }
+  - name: oaza_code
+    title: 大字コード
+    description: 法務局が付けたコード
+  - name: chome_code
+    title: 丁目コード
+  - name: koaza_code
+    title: 小字コード
+  - name: oaza
+    title: 大字名
+  - name: chome
+    title: 丁目名
+    description: 原典のまま全角数字（「３丁目」）
+  - name: koaza
+    title: 小字名
+  - name: parcels
+    title: 筆の数
+    description: 合わせた筆の数
+  - name: geometry
+    title: ジオメトリ
+    description: 筆の形を合わせた形（POLYGON / MULTIPOLYGON、経緯度 JGD2011）
