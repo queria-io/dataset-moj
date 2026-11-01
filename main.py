@@ -2,8 +2,7 @@
 
 1. list: G空間情報センターから取り込む zip の一覧を取る
 2. download / convert: zip を取って 1 筆 1 行の Parquet にし、zip は消す
-3. aza: 筆の形を大字・丁目・小字ごとに合わせる（市区町村ごと）
-4. dbt: dbt ビルド
+3. dbt: dbt ビルド
 
 全国の zip は約 100GB あるので、取ったそばから変換して消す。Parquet が既にある zip は
 取らない（ファイル名に年が入るので、原典が更新されると新しい名前になる）。
@@ -15,7 +14,6 @@ from pathlib import Path
 
 from dbt.cli.main import dbtRunner
 
-from pipelines.aza import union_all
 from pipelines.convert import convert
 from pipelines.download import fetch_zip, list_moj
 
@@ -63,16 +61,13 @@ def dbt_build():
 
 
 def main():
-    logger.info("1/4: list (登記所備付地図の zip)")
+    logger.info("1/3: list (登記所備付地図の zip)")
     sources = list_moj()
 
-    logger.info("2/4: download / convert (地図 XML → Parquet)")
+    logger.info("2/3: download / convert (地図 XML → Parquet)")
     convert_all(sources)
 
-    logger.info("3/4: aza (筆の形を大字・丁目・小字ごとに合わせる)")
-    union_all(PARCEL_DIR)
-
-    logger.info("4/4: dbt build")
+    logger.info("3/3: dbt build")
     dbt_build()
 
 

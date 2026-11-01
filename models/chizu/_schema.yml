@@ -11,14 +11,6 @@ models:
     data_tests: [not_null]
   - name: city_code
     data_tests: [not_null]
-- name: aza
-  description: 大字・丁目・小字ごとに筆の形を合わせた形。1 行が 1 つの大字・丁目・小字。
-  access: public
-  columns:
-  - name: city_code
-    data_tests: [not_null]
-  - name: geometry
-    data_tests: [not_null]
 - name: source
   description: 取り込んだ地図データの zip。1 行が 1 zip。
   access: public
