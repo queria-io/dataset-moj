@@ -89,5 +89,6 @@ def list_moj() -> list[dict]:
     if not found:
         raise RuntimeError(f"no zip found for prefectures {PREFECTURES or 'all'}")
     logger.info("  %d zip, %.2f GB", len(found), sum(s["size"] or 0 for s in found) / 1e9)
+    SOURCES.parent.mkdir(parents=True, exist_ok=True)
     write_atomic(SOURCES, "".join(json.dumps(s, ensure_ascii=False) + "\n" for s in found).encode())
     return found
