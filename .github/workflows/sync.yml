@@ -19,4 +19,6 @@ jobs:
     with:
       dataset_name: moj
       timeout_minutes: 360
+      # 新しいデータファイル (全国で約 17.5GB) を push まで手元に置くことがあるので、ディスクを空ける
+      free_disk: true
     secrets: inherit
