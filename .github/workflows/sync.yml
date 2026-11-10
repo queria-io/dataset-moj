@@ -11,6 +11,10 @@ concurrency:
 
 jobs:
   sync:
+    # Queria のトークンを GitHub Actions の OIDC で取る (dataset-shared の scripts/queria_token.py)
+    permissions:
+      contents: read
+      id-token: write
     uses: queria-io/dataset-shared/.github/workflows/sync.yml@main
     with:
       dataset_name: moj

@@ -1,4 +1,5 @@
-spec_version: "0.1"
+# この dataset.yml は fdl commit が読む（FDL の dataset.json を YAML で書いたもの）。
+# 表の説明は models/ の *.table.yml に書く。表と列の型・NULL・行数は fdl commit がカタログから埋める。
 name: moj
 title: 法務省 登記所備付地図
 description: |-
@@ -18,7 +19,6 @@ keywords:
   - 法務局
 homepage: https://github.com/queria-io/dataset-moj
 language: ja
-themes: [housing_land]
 
 licenses:
   - id: JP-MOJ-CHIZU
@@ -40,8 +40,12 @@ contributors:
     roles: [rightsHolder]
 
 update_frequency: yearly
-cover: 🗺️
 
 schemas:
   - name: chizu
     title: 登記所備付地図
+
+annotations:
+  queria:
+    themes: [housing_land]
+    cover: 🗺️

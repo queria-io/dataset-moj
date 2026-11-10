@@ -7,7 +7,6 @@ description: |-
   - 任意座標系の図面の筆は形が NULL です（全国では 53%、東京都では 9 割）
   - 1 筆を示すキーは (file, fude_id) です。地番は図面をまたいで重なることがあります
   - 他の情報と照合して特定の個人を識別する使い方は、利用規約で禁止されています
-published: true
 primary_key: [file, fude_id]
 fields:
   - name: city_code

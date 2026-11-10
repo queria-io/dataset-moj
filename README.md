@@ -54,7 +54,7 @@ GROUP BY crs;
 ```bash
 git submodule update --init
 uv sync
-scripts/build.sh                        # queria sync -- python main.py
+scripts/build.sh                        # fdl checkout → python main.py → fdl commit → fdl push
 MOJ_PREFECTURES=13,14 scripts/build.sh  # 東京都と神奈川県だけ
 ```
 
