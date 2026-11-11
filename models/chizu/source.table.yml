@@ -5,7 +5,6 @@ description: |-
   取り込んだ登記所備付地図データの一覧です。1 行が G空間情報センターの 1 データセット（市区町村の 1 登記所）の zip です。
 
   - 使うときの出典には title と page_url を書いてください
-published: true
 primary_key: [file]
 fields:
   - name: file
@@ -13,10 +12,10 @@ fields:
     description: 市区町村コード-登記所コード-年.zip
   - name: city_code
     title: 市区町村コード（5 桁）
-    semantic: { role: entity, name: city }
+    annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: lg_code
     title: 全国地方公共団体コード
-    semantic: { role: entity, name: city }
+    annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: registry_code
     title: 登記所コード
   - name: year

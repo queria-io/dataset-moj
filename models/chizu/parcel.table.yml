@@ -7,17 +7,16 @@ description: |-
   - 任意座標系の図面の筆は形が NULL です（全国では 53%、東京都では 9 割）
   - 1 筆を示すキーは (file, fude_id) です。地番は図面をまたいで重なることがあります
   - 他の情報と照合して特定の個人を識別する使い方は、利用規約で禁止されています
-published: true
 primary_key: [file, fude_id]
 fields:
   - name: city_code
     title: 市区町村コード（5 桁）
     description: 原典の市区町村コード（検査数字なし）
-    semantic: { role: entity, name: city }
+    annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: lg_code
     title: 全国地方公共団体コード
     description: city_code に検査数字を付けた 6 桁
-    semantic: { role: entity, name: city }
+    annotations: { queria: { semantic: { role: entity, name: city } } }
   - name: city_name
     title: 市区町村名
     description: 原典の市区町村名。合併前の名前のことがあります
